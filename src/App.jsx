@@ -22,7 +22,6 @@ function App() {
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     );
-    console.log(token);
     if (token !== "") {
       axios.defaults.headers.common.Authorization = token;
       productModalRef.current = new Modal("#productModal", {
@@ -34,10 +33,10 @@ function App() {
 
   const checkAdmin = async () => {
     try {
-      console.log(isAuth);
       const res = await axios.post(`${API_BASE}/api/user/check`);
-      if (res.data.success) {    
+      if (res.data.success) {
         setIsAuth(true);
+        getProduct();
       }
     } catch (err) {
       console.log(err);
@@ -65,6 +64,13 @@ function App() {
     }
   };
 
+  const [productData, setProductData] = useState(null);
+
+  const getProduct = async () => {
+    const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
+    setProductData(res.data.products);
+  };
+
   return (
     <>
       {isAuth ? (
@@ -85,32 +91,45 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td className="text-end"></td>
-                  <td className="text-end"></td>
-                  <td>
-                    <span className="text-success">啟用</span>
-                    <span>未啟用</span>
-                  </td>
-                  <td>
-                    <div className="btn-group">
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary btn-sm"
-                      >
-                        編輯
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                      >
-                        刪除
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                {productData !== null ? (
+                  productData.map((productItem) => {
+                    return (
+                      <tr key={productItem.id}>
+                        <td>{productItem.category}</td>
+                        <td>{productItem.title}</td>
+                        <td className="text-end">{productItem.origin_price}</td>
+                        <td className="text-end">{productItem.price}</td>
+                        <td>
+                          {productItem.is_enabled === 1 ? (
+                            <span className="text-success">啟用</span>
+                          ) : (
+                            <span>未啟用</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="btn-group">
+                            <button
+                              type="button"
+                              className="btn btn-outline-primary btn-sm"
+                            >
+                              編輯
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm"
+                            >
+                              刪除
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="6">目前沒有產品資料</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
