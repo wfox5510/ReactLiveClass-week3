@@ -3,7 +3,6 @@ import "./App.css";
 import axios from "axios";
 import { Modal } from "bootstrap";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import "../node_modules/bootstrap/dist/js/bootstrap.min.js";
 
 const API_BASE = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -13,9 +12,9 @@ function App() {
     username: "",
     password: "",
   });
-  const modalRef = useRef();
+  const productModalRef = useRef();
   const [isAuth, setIsAuth] = useState(false);
-  const productModalRef = useRef(null); // 有需要嘛?差別在那，寫寫看確認一下
+  // const productModalRef = useRef(null); 有需要嘛?差別在那，寫寫看確認一下
   /*
     productModalRef.current = new Modal("#productModal", {
       keyboard: false,
@@ -24,11 +23,6 @@ function App() {
   // init，驗證登入
   useEffect(() => {
     // 綁定產品新增編輯頁 Modal
-
-    const productModal = new Modal(modalRef.current,{
-      backdrop:false
-    });
-
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
@@ -38,7 +32,7 @@ function App() {
       checkAdmin();
     }
   }, []);
-  
+
   const checkAdmin = async () => {
     try {
       const res = await axios.post(`${API_BASE}/api/user/check`);
@@ -79,11 +73,31 @@ function App() {
     const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
     setProductData(res.data.products);
   };
-  
 
-  const handleOpenProductModal = ()=>{
-    //productModal.show();
-  }
+  //編輯/建立產品 modal
+  const defaultProductData = {
+    category: "",
+    content: "",
+    description: "",
+    imageUrl: "",
+    imagesUrl: [],
+    is_enabled: 1,
+    num: 1,
+    origin_price: 0,
+    price: 0,
+    title: "",
+    unit: "",
+  };
+  
+  const [tempProductData, setTempProductData] = useState(defaultProductData);
+  
+  const handleOpenProductModal = (productItem, isNew) => {
+    const productModal = new Modal(productModalRef.current, {
+      backdrop: false,
+    });
+    setTempProductData(productItem);
+    productModal.show();
+  };
 
   return (
     <>
@@ -91,7 +105,14 @@ function App() {
         <div>
           <div className="container">
             <div className="text-end mt-4">
-              <button className="btn btn-primary">建立新的產品</button>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  handleOpenProductModal(true);
+                }}
+              >
+                建立新的產品
+              </button>
             </div>
             <table className="table mt-4">
               <thead>
@@ -125,7 +146,9 @@ function App() {
                             <button
                               type="button"
                               className="btn btn-outline-primary btn-sm"
-                              onClick={handleOpenProductModal}
+                              onClick={() => {
+                                handleOpenProductModal(productItem, false);
+                              }}
                             >
                               編輯
                             </button>
@@ -193,7 +216,7 @@ function App() {
         </div>
       )}
       <div
-        ref={modalRef}
+        ref={productModalRef}
         id="productModal"
         className="modal fade"
         tabIndex="-1"
@@ -250,6 +273,7 @@ function App() {
                       type="text"
                       className="form-control"
                       placeholder="請輸入標題"
+                      defaultValue={tempProductData.title}
                     />
                   </div>
 
