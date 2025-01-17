@@ -83,22 +83,33 @@ function App() {
     imagesUrl: [],
     is_enabled: 1,
     num: 1,
-    origin_price: 0,
-    price: 0,
+
+    origin_price: "",
+    price: "",
+
     title: "",
     unit: "",
   };
-  
+
   const [tempProductData, setTempProductData] = useState(defaultProductData);
-  
+  useEffect(() => {
+    console.log(tempProductData);
+  }, [tempProductData]);
   const handleOpenProductModal = (productItem, isNew) => {
+    setTempProductData(productItem);
     const productModal = new Modal(productModalRef.current, {
       backdrop: false,
     });
-    setTempProductData(productItem);
     productModal.show();
   };
 
+  const handleInputModal = (e) => {
+    const { name, value } = e.target;
+    setTempProductData({
+      ...tempProductData,
+      [name]: value,
+    });
+  };
   return (
     <>
       {isAuth ? (
@@ -108,7 +119,7 @@ function App() {
               <button
                 className="btn btn-primary"
                 onClick={() => {
-                  handleOpenProductModal(true);
+                  handleOpenProductModal(defaultProductData, true);
                 }}
               >
                 建立新的產品
@@ -270,10 +281,12 @@ function App() {
                     </label>
                     <input
                       id="title"
+                      name="title"
                       type="text"
                       className="form-control"
                       placeholder="請輸入標題"
-                      defaultValue={tempProductData.title}
+                      value={tempProductData.title}
+                      onChange={handleInputModal}
                     />
                   </div>
 
@@ -284,9 +297,12 @@ function App() {
                       </label>
                       <input
                         id="category"
+                        name="category"
                         type="text"
                         className="form-control"
                         placeholder="請輸入分類"
+                        value={tempProductData.category}
+                        onChange={handleInputModal}
                       />
                     </div>
                     <div className="mb-3 col-md-6">
@@ -295,9 +311,12 @@ function App() {
                       </label>
                       <input
                         id="unit"
+                        name="unit"
                         type="text"
                         className="form-control"
                         placeholder="請輸入單位"
+                        value={tempProductData.unit}
+                        onChange={handleInputModal}
                       />
                     </div>
                   </div>
@@ -309,10 +328,13 @@ function App() {
                       </label>
                       <input
                         id="origin_price"
+                        name="origin_price"
                         type="number"
                         min="0"
                         className="form-control"
                         placeholder="請輸入原價"
+                        value={tempProductData.origin_price}
+                        onChange={handleInputModal}
                       />
                     </div>
                     <div className="mb-3 col-md-6">
@@ -321,10 +343,13 @@ function App() {
                       </label>
                       <input
                         id="price"
+                        name="price"
                         type="number"
                         min="0"
                         className="form-control"
                         placeholder="請輸入售價"
+                        value={tempProductData.price}
+                        onChange={handleInputModal}
                       />
                     </div>
                   </div>
@@ -336,8 +361,11 @@ function App() {
                     </label>
                     <textarea
                       id="description"
+                      name="description"
                       className="form-control"
                       placeholder="請輸入產品描述"
+                      value={tempProductData.description}
+                      onChange={handleInputModal}
                     ></textarea>
                   </div>
                   <div className="mb-3">
@@ -346,14 +374,18 @@ function App() {
                     </label>
                     <textarea
                       id="content"
+                      name="content"
                       className="form-control"
                       placeholder="請輸入說明內容"
+                      value={tempProductData.content}
+                      onChange={handleInputModal}
                     ></textarea>
                   </div>
                   <div className="mb-3">
                     <div className="form-check">
                       <input
                         id="is_enabled"
+                        name="is_enabled"
                         className="form-check-input"
                         type="checkbox"
                       />
