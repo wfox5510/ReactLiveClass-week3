@@ -4,8 +4,8 @@ import axios from 'axios';
 import { Modal } from 'bootstrap'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
-const API_BASE = "https://ec-course-api.hexschool.io/v2";
-const API_PATH = ""; 
+const API_BASE = import.meta.env.VITE_BASE_URL;
+const API_PATH = import.meta.env.VITE_API_PATH; 
 
 function App() {
   const [formData, setFormData] = useState({
