@@ -1,41 +1,46 @@
-import { useState, useEffect, useRef } from 'react'
-import './App.css'
-import axios from 'axios';
-import { Modal } from 'bootstrap'
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
+import { useState, useEffect, useRef } from "react";
+import "./App.css";
+import axios from "axios";
+import { Modal } from "bootstrap";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
 const API_BASE = import.meta.env.VITE_BASE_URL;
-const API_PATH = import.meta.env.VITE_API_PATH; 
+const API_PATH = import.meta.env.VITE_API_PATH;
 
 function App() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-  const [isAuth, setisAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
   const productModalRef = useRef(null);
   const modalRef = useRef();
   useEffect(() => {
-    const modal = new Modal(modalRef.current)
-    modal.show();
+    // const modal = new Modal(modalRef.current)
+    // modal.show();
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     );
-    axios.defaults.headers.common.Authorization = token;
-    productModalRef.current = new bootstrap.Modal('#productModal', {
-      keyboard: false
-    });
-    checkAdmin();
-    
+    console.log(token);
+    if (token !== "") {
+      axios.defaults.headers.common.Authorization = token;
+      productModalRef.current = new Modal("#productModal", {
+        keyboard: false,
+      });
+      checkAdmin();
+    }
   }, []);
 
   const checkAdmin = async () => {
     try {
-      await axios.post(`${API_BASE}/api/user/check`);
-      setisAuth(true);
+      console.log(isAuth);
+      const res = await axios.post(`${API_BASE}/api/user/check`);
+      if (res.data.success) {    
+        setIsAuth(true);
+      }
     } catch (err) {
-      console.log(err.response.data.message);
+      console.log(err);
     }
   };
 
@@ -54,7 +59,7 @@ function App() {
       const { token, expired } = response.data;
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
       axios.defaults.headers.common.Authorization = token;
-      setisAuth(true);
+      setIsAuth(true);
     } catch (error) {
       alert("登入失敗: " + error.response.data.message);
     }
@@ -91,10 +96,16 @@ function App() {
                   </td>
                   <td>
                     <div className="btn-group">
-                      <button type="button" className="btn btn-outline-primary btn-sm">
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary btn-sm"
+                      >
                         編輯
                       </button>
-                      <button type="button" className="btn btn-outline-danger btn-sm">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                      >
                         刪除
                       </button>
                     </div>
@@ -120,7 +131,7 @@ function App() {
                     onChange={handleInputChange}
                     required
                     autoFocus
-                    />
+                  />
                   <label htmlFor="username">Email address</label>
                 </div>
                 <div className="form-floating">
@@ -132,13 +143,13 @@ function App() {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    />
+                  />
                   <label htmlFor="password">Password</label>
                 </div>
                 <button
                   className="btn btn-lg btn-primary w-100 mt-3"
                   type="submit"
-                  >
+                >
                   登入
                 </button>
               </form>
@@ -154,7 +165,7 @@ function App() {
         tabIndex="-1"
         aria-labelledby="productModalLabel"
         aria-hidden="true"
-        >
+      >
         <div className="modal-dialog modal-xl">
           <div className="modal-content border-0">
             <div className="modal-header bg-dark text-white">
@@ -166,7 +177,7 @@ function App() {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-                ></button>
+              ></button>
             </div>
             <div className="modal-body">
               <div className="row">
@@ -180,7 +191,7 @@ function App() {
                         type="text"
                         className="form-control"
                         placeholder="請輸入圖片連結"
-                        />
+                      />
                     </div>
                     <img className="img-fluid" src="" alt="" />
                   </div>
@@ -197,75 +208,89 @@ function App() {
                 </div>
                 <div className="col-sm-8">
                   <div className="mb-3">
-                    <label htmlFor="title" className="form-label">標題</label>
+                    <label htmlFor="title" className="form-label">
+                      標題
+                    </label>
                     <input
                       id="title"
                       type="text"
                       className="form-control"
                       placeholder="請輸入標題"
-                      />
+                    />
                   </div>
 
                   <div className="row">
                     <div className="mb-3 col-md-6">
-                      <label htmlFor="category" className="form-label">分類</label>
+                      <label htmlFor="category" className="form-label">
+                        分類
+                      </label>
                       <input
                         id="category"
                         type="text"
                         className="form-control"
                         placeholder="請輸入分類"
-                        />
+                      />
                     </div>
                     <div className="mb-3 col-md-6">
-                      <label htmlFor="unit" className="form-label">單位</label>
+                      <label htmlFor="unit" className="form-label">
+                        單位
+                      </label>
                       <input
                         id="unit"
                         type="text"
                         className="form-control"
                         placeholder="請輸入單位"
-                        />
+                      />
                     </div>
                   </div>
 
                   <div className="row">
                     <div className="mb-3 col-md-6">
-                      <label htmlFor="origin_price" className="form-label">原價</label>
+                      <label htmlFor="origin_price" className="form-label">
+                        原價
+                      </label>
                       <input
                         id="origin_price"
                         type="number"
                         min="0"
                         className="form-control"
                         placeholder="請輸入原價"
-                        />
+                      />
                     </div>
                     <div className="mb-3 col-md-6">
-                      <label htmlFor="price" className="form-label">售價</label>
+                      <label htmlFor="price" className="form-label">
+                        售價
+                      </label>
                       <input
                         id="price"
                         type="number"
                         min="0"
                         className="form-control"
                         placeholder="請輸入售價"
-                        />
+                      />
                     </div>
                   </div>
                   <hr />
 
                   <div className="mb-3">
-                    <label htmlFor="description" className="form-label">產品描述</label>
+                    <label htmlFor="description" className="form-label">
+                      產品描述
+                    </label>
                     <textarea
                       id="description"
                       className="form-control"
                       placeholder="請輸入產品描述"
-                      ></textarea>
+                    ></textarea>
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="content" className="form-label">說明內容</label>
+                    <label htmlFor="content" className="form-label">
+                      說明內容
+                    </label>
                     <textarea
                       id="content"
                       className="form-control"
                       placeholder="請輸入說明內容"
-                      ></textarea>
+                    ></textarea>
                   </div>
                   <div className="mb-3">
                     <div className="form-check">
@@ -273,7 +298,7 @@ function App() {
                         id="is_enabled"
                         className="form-check-input"
                         type="checkbox"
-                        />
+                      />
                       <label className="form-check-label" htmlFor="is_enabled">
                         是否啟用
                       </label>
@@ -287,10 +312,12 @@ function App() {
                 type="button"
                 className="btn btn-outline-secondary"
                 data-bs-dismiss="modal"
-                >
+              >
                 取消
               </button>
-              <button type="button" className="btn btn-primary">確認</button>
+              <button type="button" className="btn btn-primary">
+                確認
+              </button>
             </div>
           </div>
         </div>
@@ -299,4 +326,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
