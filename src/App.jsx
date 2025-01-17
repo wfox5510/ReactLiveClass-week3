@@ -3,6 +3,7 @@ import "./App.css";
 import axios from "axios";
 import { Modal } from "bootstrap";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "../node_modules/bootstrap/dist/js/bootstrap.min.js";
 
 const API_BASE = import.meta.env.VITE_BASE_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -12,6 +13,7 @@ function App() {
     username: "",
     password: "",
   });
+  const modalRef = useRef();
   const [isAuth, setIsAuth] = useState(false);
   const productModalRef = useRef(null); // 有需要嘛?差別在那，寫寫看確認一下
   /*
@@ -21,6 +23,12 @@ function App() {
   */
   // init，驗證登入
   useEffect(() => {
+    // 綁定產品新增編輯頁 Modal
+
+    const productModal = new Modal(modalRef.current,{
+      backdrop:false
+    });
+
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
@@ -72,12 +80,10 @@ function App() {
     setProductData(res.data.products);
   };
   
-  // 綁定產品新增編輯頁 Modal
-  const modalRef = useRef();
-  const modal = new Modal(modalRef.current,{
-    backdrop:false
-  })
 
+  const handleOpenProductModal = ()=>{
+    //productModal.show();
+  }
 
   return (
     <>
@@ -119,6 +125,7 @@ function App() {
                             <button
                               type="button"
                               className="btn btn-outline-primary btn-sm"
+                              onClick={handleOpenProductModal}
                             >
                               編輯
                             </button>
