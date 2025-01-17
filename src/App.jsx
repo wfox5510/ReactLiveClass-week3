@@ -13,24 +13,24 @@ function App() {
     password: "",
   });
   const [isAuth, setIsAuth] = useState(false);
-  const productModalRef = useRef(null);
-  const modalRef = useRef();
+  const productModalRef = useRef(null); // 有需要嘛?差別在那，寫寫看確認一下
+  /*
+    productModalRef.current = new Modal("#productModal", {
+      keyboard: false,
+    });
+  */
+  // init，驗證登入
   useEffect(() => {
-    // const modal = new Modal(modalRef.current)
-    // modal.show();
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
       "$1"
     );
     if (token !== "") {
       axios.defaults.headers.common.Authorization = token;
-      productModalRef.current = new Modal("#productModal", {
-        keyboard: false,
-      });
       checkAdmin();
     }
   }, []);
-
+  
   const checkAdmin = async () => {
     try {
       const res = await axios.post(`${API_BASE}/api/user/check`);
@@ -42,7 +42,7 @@ function App() {
       console.log(err);
     }
   };
-
+  // 登入頁面操作邏輯
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -64,12 +64,20 @@ function App() {
     }
   };
 
+  //取得產品資料
   const [productData, setProductData] = useState(null);
 
   const getProduct = async () => {
     const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
     setProductData(res.data.products);
   };
+  
+  // 綁定產品新增編輯頁 Modal
+  const modalRef = useRef();
+  const modal = new Modal(modalRef.current,{
+    backdrop:false
+  })
+
 
   return (
     <>
