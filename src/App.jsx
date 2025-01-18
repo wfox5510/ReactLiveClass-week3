@@ -106,6 +106,7 @@ function App() {
     productModal.show();
   };
 
+  //編輯/建立產品資料處理
   const handleInputModal = (e) => {
     const { name, value, dataset } = e.target;
     switch (name) {
@@ -116,6 +117,18 @@ function App() {
           ...tempProductData,
           imagesUrl: newImagesUrl,
         });
+        break;
+      case "is_enabled":
+        const { checked } = e.target;
+        checked === true
+          ? setTempProductData({
+              ...tempProductData,
+              is_enabled: 1,
+            })
+          : setTempProductData({
+              ...tempProductData,
+              is_enabled: 0,
+            });
         break;
       default:
         setTempProductData({
@@ -143,6 +156,11 @@ function App() {
     });
   };
   //上傳/修改產品資料
+  const handleModalBtn = () => {};
+
+  const postProjectData = () => {};
+
+  const patchprojectData = () => {};
 
   return (
     <>
@@ -468,6 +486,10 @@ function App() {
                         name="is_enabled"
                         className="form-check-input"
                         type="checkbox"
+                        onChange={handleInputModal}
+                        checked={
+                          tempProductData.is_enabled === 1 ? true : false
+                        }
                       />
                       <label className="form-check-label" htmlFor="is_enabled">
                         是否啟用
