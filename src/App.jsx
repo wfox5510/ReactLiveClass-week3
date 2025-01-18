@@ -92,22 +92,24 @@ function App() {
   };
 
   const [tempProductData, setTempProductData] = useState(defaultProductData);
+
+  //TEST  //TEST  //TEST  //TEST  //TEST
   useEffect(() => {
     console.log(tempProductData);
   }, [tempProductData]);
+
   const handleOpenProductModal = (productItem, isNew) => {
     setTempProductData(productItem);
     const productModal = new Modal(productModalRef.current, {
-      backdrop: false,
+      backdrop: "static",
     });
     productModal.show();
   };
 
   const handleInputModal = (e) => {
-    
-    const { name, value , dataset } = e.target;
-    switch(name){
-      case "imagesUrl":
+    const { name, value, dataset } = e.target;
+    switch (name) {
+      case "imagesUrl": //副圖陣列處理
         const newImagesUrl = tempProductData.imagesUrl;
         newImagesUrl[dataset.index] = value;
         setTempProductData({
@@ -120,9 +122,28 @@ function App() {
           ...tempProductData,
           [name]: value,
         });
-        break
+        break;
     }
   };
+  //新增/刪除副圖
+  const handleAddImages = () => {
+    const newImagesUrl = tempProductData.imagesUrl;
+    newImagesUrl.push("");
+    setTempProductData({
+      ...tempProductData,
+      imagesUrl: newImagesUrl,
+    });
+  };
+  const handleDelImages = () => {
+    const newImagesUrl = tempProductData.imagesUrl;
+    newImagesUrl.pop("");
+    setTempProductData({
+      ...tempProductData,
+      imagesUrl: newImagesUrl,
+    });
+  };
+  //上傳/修改產品資料
+
   return (
     <>
       {isAuth ? (
@@ -285,7 +306,7 @@ function App() {
                       />
                     ) : null}
                   </div>
-                  {tempProductData.imagesUrl.map((imgItem,index) => {
+                  {tempProductData.imagesUrl.map((imgItem, index) => {
                     return (
                       <div className="mb-2" key={index}>
                         <div className="mb-3">
@@ -302,23 +323,35 @@ function App() {
                             data-index={index}
                           />
                         </div>
-                        <img
-                          className="img-fluid"
-                          src={imgItem}
-                          alt="productImg"
-                        />
+                        {imgItem !== "" ? (
+                          <img
+                            className="img-fluid"
+                            src={imgItem}
+                            alt="productImg"
+                          />
+                        ) : null}
                       </div>
                     );
                   })}
-                  <div>
-                    <button className="btn btn-outline-primary btn-sm d-block w-100">
-                      新增圖片
-                    </button>
-                  </div>
-                  <div>
-                    <button className="btn btn-outline-danger btn-sm d-block w-100">
-                      刪除圖片
-                    </button>
+                  <div className="d-flex gap-2">
+                    {tempProductData.imagesUrl[
+                      tempProductData.imagesUrl.length - 1
+                    ] !== "" && tempProductData.imagesUrl.length < 5 ? (
+                      <button
+                        className="btn btn-outline-primary btn-sm d-block w-100"
+                        onClick={handleAddImages}
+                      >
+                        新增圖片
+                      </button>
+                    ) : null}
+                    {tempProductData.imagesUrl.length > 1 ? (
+                      <button
+                        className="btn btn-outline-danger btn-sm d-block w-100"
+                        onClick={handleDelImages}
+                      >
+                        刪除圖片
+                      </button>
+                    ) : null}
                   </div>
                 </div>
                 <div className="col-sm-8">
