@@ -94,11 +94,21 @@ function App() {
   const [tempProductData, setTempProductData] = useState(defaultProductData);
 
   //TEST  //TEST  //TEST  //TEST  //TEST
-  useEffect(() => {
-    console.log(tempProductData);
-  }, [tempProductData]);
 
-  const handleOpenProductModal = (productItem, isNew) => {
+  const [isNewProduct, setIsNewProduct] = useState(null);
+  useEffect(() => {
+    console.log(isNewProduct);
+  }, [isNewProduct]);
+
+  const handleOpenProductModal = (productItem, modalMode) => {
+    switch (modalMode) {
+      case "newProduct":
+        setIsNewProduct(true);
+        break;
+      case "editProduct":
+        setIsNewProduct(false);
+        break;
+    }
     setTempProductData(productItem);
     const productModal = new Modal(productModalRef.current, {
       backdrop: "static",
@@ -115,7 +125,7 @@ function App() {
         newImagesUrl[dataset.index] = value;
         setTempProductData({
           ...tempProductData,
-          imagesUrl: newImagesUrl,
+          [name]: newImagesUrl,
         });
         break;
       case "is_enabled":
@@ -123,12 +133,26 @@ function App() {
         checked === true
           ? setTempProductData({
               ...tempProductData,
-              is_enabled: 1,
+              [name]: 1,
             })
           : setTempProductData({
               ...tempProductData,
-              is_enabled: 0,
+              [name]: 0,
             });
+        break;
+      case "origin_price":
+        console.log(value);
+        setTempProductData({
+          ...tempProductData,
+          [name]: Number(value),
+        });
+        break;
+      case "price":
+        console.log(value);
+        setTempProductData({
+          ...tempProductData,
+          [name]: Number(value),
+        });
         break;
       default:
         setTempProductData({
@@ -156,11 +180,34 @@ function App() {
     });
   };
   //上傳/修改產品資料
-  const handleModalBtn = () => {};
 
-  const postProjectData = () => {};
+  const handleModalBtn = () => {
+    isNewProduct ? postProjectData() : putProjectData();
+  };
 
-  const patchprojectData = () => {};
+  const postProjectData = async () => {
+    try {
+      console.log(tempProductData);
+      await axios.post(`${API_BASE}/api/${API_PATH}/admin/product`, {
+        data: tempProductData,
+      });
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+  const putProjectData = async () => {
+    try {
+      await axios.put(
+        `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`,
+        {
+          data: tempProductData,
+        }
+      );
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
 
   return (
     <>
@@ -171,7 +218,7 @@ function App() {
               <button
                 className="btn btn-primary"
                 onClick={() => {
-                  handleOpenProductModal(defaultProductData, true);
+                  handleOpenProductModal(defaultProductData, "newProduct");
                 }}
               >
                 建立新的產品
@@ -210,7 +257,10 @@ function App() {
                               type="button"
                               className="btn btn-outline-primary btn-sm"
                               onClick={() => {
-                                handleOpenProductModal(productItem, false);
+                                handleOpenProductModal(
+                                  productItem,
+                                  "editProduct"
+                                );
                               }}
                             >
                               編輯
@@ -507,7 +557,11 @@ function App() {
               >
                 取消
               </button>
-              <button type="button" className="btn btn-primary">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleModalBtn}
+              >
                 確認
               </button>
             </div>
