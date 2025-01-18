@@ -104,11 +104,24 @@ function App() {
   };
 
   const handleInputModal = (e) => {
-    const { name, value } = e.target;
-    setTempProductData({
-      ...tempProductData,
-      [name]: value,
-    });
+    
+    const { name, value , dataset } = e.target;
+    switch(name){
+      case "imagesUrl":
+        const newImagesUrl = tempProductData.imagesUrl;
+        newImagesUrl[dataset.index] = value;
+        setTempProductData({
+          ...tempProductData,
+          imagesUrl: newImagesUrl,
+        });
+        break;
+      default:
+        setTempProductData({
+          ...tempProductData,
+          [name]: value,
+        });
+        break
+    }
   };
   return (
     <>
@@ -256,13 +269,47 @@ function App() {
                         輸入圖片網址
                       </label>
                       <input
+                        name="imageUrl"
                         type="text"
                         className="form-control"
                         placeholder="請輸入圖片連結"
+                        value={tempProductData.imageUrl}
+                        onChange={handleInputModal}
                       />
                     </div>
-                    <img className="img-fluid" src="" alt="" />
+                    {tempProductData.imageUrl !== "" ? (
+                      <img
+                        className="img-fluid"
+                        src={tempProductData.imageUrl}
+                        alt="productImg"
+                      />
+                    ) : null}
                   </div>
+                  {tempProductData.imagesUrl.map((imgItem,index) => {
+                    return (
+                      <div className="mb-2" key={index}>
+                        <div className="mb-3">
+                          <label htmlFor="imageUrl" className="form-label">
+                            輸入圖片網址
+                          </label>
+                          <input
+                            type="text"
+                            name="imagesUrl"
+                            className="form-control"
+                            placeholder="請輸入圖片連結"
+                            value={imgItem}
+                            onChange={handleInputModal}
+                            data-index={index}
+                          />
+                        </div>
+                        <img
+                          className="img-fluid"
+                          src={imgItem}
+                          alt="productImg"
+                        />
+                      </div>
+                    );
+                  })}
                   <div>
                     <button className="btn btn-outline-primary btn-sm d-block w-100">
                       新增圖片
