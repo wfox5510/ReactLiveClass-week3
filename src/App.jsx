@@ -116,6 +116,11 @@ function App() {
     productModal.show();
   };
 
+  const handleCloseProductModal = () => {
+    const productModal = Modal.getInstance(productModalRef.current)
+    productModal.hide();
+  }
+
   //編輯/建立產品資料處理
   const handleInputModal = (e) => {
     const { name, value, dataset } = e.target;
@@ -191,6 +196,8 @@ function App() {
       await axios.post(`${API_BASE}/api/${API_PATH}/admin/product`, {
         data: tempProductData,
       });
+      getProduct();
+      handleCloseProductModal();
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -198,12 +205,15 @@ function App() {
 
   const putProjectData = async () => {
     try {
+      console.log(`${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`);
       await axios.put(
         `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`,
         {
           data: tempProductData,
         }
       );
+      getProduct();
+      handleCloseProductModal();
     } catch (error) {
       alert(error.response.data.message);
     }
