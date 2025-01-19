@@ -41,7 +41,7 @@ function App() {
         getProduct();
       }
     } catch (err) {
-      console.log(err);
+      alert(err.response.data.message)
     }
   };
   // 登入頁面操作邏輯
@@ -71,8 +71,6 @@ function App() {
 
   const getProduct = async () => {
     const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
-    console.log(res.data.products);
-    console.log(res.data.products[0].imagesUrl);
     setProductData(res.data.products);
   };
 
@@ -94,13 +92,7 @@ function App() {
   };
 
   const [tempProductData, setTempProductData] = useState(defaultProductData);
-
-  //TEST  //TEST  //TEST  //TEST  //TEST
-
   const [isNewProduct, setIsNewProduct] = useState(null);
-  useEffect(() => {
-    console.log(isNewProduct);
-  }, [isNewProduct]);
 
   const handleOpenProductModal = (productItem, modalMode) => {
     switch (modalMode) {
@@ -148,14 +140,12 @@ function App() {
             });
         break;
       case "origin_price":
-        console.log(value);
         setTempProductData({
           ...tempProductData,
           [name]: Number(value),
         });
         break;
       case "price":
-        console.log(value);
         setTempProductData({
           ...tempProductData,
           [name]: Number(value),
@@ -194,7 +184,6 @@ function App() {
 
   const postProjectData = async () => {
     try {
-      console.log(tempProductData);
       await axios.post(`${API_BASE}/api/${API_PATH}/admin/product`, {
         data: tempProductData,
       });
@@ -207,9 +196,6 @@ function App() {
 
   const putProjectData = async () => {
     try {
-      console.log(
-        `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`
-      );
       await axios.put(
         `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`,
         {
