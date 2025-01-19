@@ -9,7 +9,7 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 function App() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const productModalRef = useRef();
@@ -71,6 +71,8 @@ function App() {
 
   const getProduct = async () => {
     const res = await axios.get(`${API_BASE}/api/${API_PATH}/admin/products`);
+    console.log(res.data.products);
+    console.log(res.data.products[0].imagesUrl);
     setProductData(res.data.products);
   };
 
@@ -80,7 +82,7 @@ function App() {
     content: "",
     description: "",
     imageUrl: "",
-    imagesUrl: [],
+    imagesUrl: [""],
     is_enabled: 1,
     num: 1,
 
@@ -117,9 +119,9 @@ function App() {
   };
 
   const handleCloseProductModal = () => {
-    const productModal = Modal.getInstance(productModalRef.current)
+    const productModal = Modal.getInstance(productModalRef.current);
     productModal.hide();
-  }
+  };
 
   //編輯/建立產品資料處理
   const handleInputModal = (e) => {
@@ -205,7 +207,9 @@ function App() {
 
   const putProjectData = async () => {
     try {
-      console.log(`${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`);
+      console.log(
+        `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`
+      );
       await axios.put(
         `${API_BASE}/api/${API_PATH}/admin/product/${tempProductData.id}`,
         {
@@ -214,6 +218,20 @@ function App() {
       );
       getProduct();
       handleCloseProductModal();
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+  //刪除產品
+  const handleDelProductBtn = (productId) => {
+    delProductData(productId);
+  };
+
+  const delProductData = async (id) => {
+    try {
+      await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`);
+      getProduct();
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -278,6 +296,9 @@ function App() {
                             <button
                               type="button"
                               className="btn btn-outline-danger btn-sm"
+                              onClick={() => {
+                                handleDelProductBtn(productItem.id);
+                              }}
                             >
                               刪除
                             </button>
@@ -384,33 +405,35 @@ function App() {
                       />
                     ) : null}
                   </div>
-                  {tempProductData.imagesUrl.map((imgItem, index) => {
-                    return (
-                      <div className="mb-2" key={index}>
-                        <div className="mb-3">
-                          <label htmlFor="imageUrl" className="form-label">
-                            輸入圖片網址
-                          </label>
-                          <input
-                            type="text"
-                            name="imagesUrl"
-                            className="form-control"
-                            placeholder="請輸入圖片連結"
-                            value={imgItem}
-                            onChange={handleInputModal}
-                            data-index={index}
-                          />
-                        </div>
-                        {imgItem !== "" ? (
-                          <img
-                            className="img-fluid"
-                            src={imgItem}
-                            alt="productImg"
-                          />
-                        ) : null}
-                      </div>
-                    );
-                  })}
+                  {tempProductData.imagesUrl !== undefined
+                    ? tempProductData.imagesUrl.map((imgItem, index) => {
+                        return (
+                          <div className="mb-2" key={index}>
+                            <div className="mb-3">
+                              <label htmlFor="imageUrl" className="form-label">
+                                輸入圖片網址
+                              </label>
+                              <input
+                                type="text"
+                                name="imagesUrl"
+                                className="form-control"
+                                placeholder="請輸入圖片連結"
+                                value={imgItem}
+                                onChange={handleInputModal}
+                                data-index={index}
+                              />
+                            </div>
+                            {imgItem !== "" ? (
+                              <img
+                                className="img-fluid"
+                                src={imgItem}
+                                alt="productImg"
+                              />
+                            ) : null}
+                          </div>
+                        );
+                      })
+                    : null}
                   <div className="d-flex gap-2">
                     {tempProductData.imagesUrl[
                       tempProductData.imagesUrl.length - 1
