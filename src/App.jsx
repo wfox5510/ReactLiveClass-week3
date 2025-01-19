@@ -9,7 +9,7 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 function App() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
   const productModalRef = useRef();
@@ -61,6 +61,7 @@ function App() {
       document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
       axios.defaults.headers.common.Authorization = token;
       setIsAuth(true);
+      getProduct();
     } catch (error) {
       alert("登入失敗: " + error.response.data.message);
     }
